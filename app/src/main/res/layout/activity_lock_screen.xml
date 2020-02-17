@@ -20,6 +20,12 @@
             android:textSize="30sp"
             android:text="테스트 텍뷰"/>
 
+<!--        <Chronometer-->
+<!--            android:id="@+id/chronometer"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:format="%s:%s:%s"/>-->
+
         <Button
             android:id="@+id/exitbtn"
             android:layout_width="wrap_content"

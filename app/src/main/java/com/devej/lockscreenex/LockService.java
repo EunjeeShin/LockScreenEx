@@ -24,6 +24,7 @@ public class LockService extends Service {
     Thread stopwatch, timer;
     LockScreenActivity screen;
 
+
     class MyBinder extends Binder {
         LockService getService(){
             return LockService.this;
@@ -122,19 +123,26 @@ public class LockService extends Service {
 //                });
                 //서비스에서 다른 액티비티는 직접 접근을 못하나
                 runningTime= 0;
+                String time;
                 while (!stopwatch.isInterrupted()){
                     try {
                         Log.d("LogTestService", "stopwatch thread begins");
                         Thread.sleep(1000);
                         runningTime++;
-                        calculateTime(runningTime);
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                screen.timer.setText(""+runningTime);
-                                //일단 임시로 runningTime 표기
-                            }
-                        });
+                        Log.d("LogTestService", "running time "+runningTime);
+                        //time= calculateTime(runningTime, false);
+                        Intent actionIntent= new Intent("com.devej.lockscreenex.SET_TIMER");
+                        //actionIntent.putExtra("timerText", time);
+                        //actionIntent.putExtra("timerText", "running time: "+runningTime);
+                        sendBroadcast(actionIntent);
+//                        handler.post(new Runnable() {
+//                            @Override
+//                            public void run() {
+//
+//                                screen.timer.setText(""+runningTime);
+//                                //일단 임시로 runningTime 표기
+//                            }
+//                        });
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                         Log.d("LogTestService", "stopwatch interrupt detected");
@@ -170,17 +178,22 @@ public class LockService extends Service {
         Log.d("LogTestService", "timer stopped");
     }
 
-    public String calculateTime(int runningTime){
-        int min= 0, sec= 0;
+    public String calculateTime(int runningTime, Boolean timerCheck){
+        int hour= 0, min= 0, sec= 0;
         if(runningTime % 60 == 0){
             if(runningTime==0){
                 //러닝타임 0초
-
+                min= 0;
+                sec= 0;
             }else{
 
             }
         }
-        return "not yet implemented";
+        return hour+" : "+min+" : "+sec;
+    }
+
+    public void finishTimer(){
+
     }
 
     @Override

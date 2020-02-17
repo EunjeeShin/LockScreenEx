@@ -4,9 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -14,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +25,10 @@ public class LockScreenActivity extends BoundServActivity {
     TextView timer;
     Button exitBtn;
     Boolean timerState;
+    BroadcastReceiver timerReceiver;
+    Chronometer chTimer;
+    String time;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +40,9 @@ public class LockScreenActivity extends BoundServActivity {
 
         timer=(TextView)findViewById(R.id.timerText);
         exitBtn=(Button)findViewById(R.id.exitbtn);
+//        chTimer=(Chronometer)findViewById(R.id.chronometer);
+//        chTimer.setFormat("%s:%s:%s");
+        //time= new String.format("%d: %d: %d");
 
         Intent gotIntent=getIntent();
         timerState= gotIntent.getBooleanExtra("timerState", false);
@@ -51,6 +61,8 @@ public class LockScreenActivity extends BoundServActivity {
                         e.printStackTrace();
                     }
                     LockScreenActivity.this.mServ.startTimer();
+//                    chTimer.setBase(0);
+//                    chTimer.setCountDown();
                     Log.d("LogTestService", "mServ is "+mServ);
                 }
             }).start();
@@ -70,6 +82,21 @@ public class LockScreenActivity extends BoundServActivity {
                 }
             }).start();
         }
+
+        timerReceiver=new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action= intent.getAction();
+                if(action.equals("com.devej.lockscreenex.SET_TIMER")){
+                    Log.d("LogTestActivity", "running time in String "+intent.getStringExtra("timerText"));
+                    //timer.setText(intent.getStringExtra("timerText"));
+                }
+            }
+        };
+        IntentFilter filter= new IntentFilter();
+        filter.addAction("com.devej.lockscreenex.SET_TIMER");
+        registerReceiver(timerReceiver, filter);
+
 
         exitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,5 +145,6 @@ public class LockScreenActivity extends BoundServActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unregisterReceiver(timerReceiver);
     }
 }
